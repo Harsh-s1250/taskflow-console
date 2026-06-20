@@ -1,0 +1,12 @@
+package com.taskflow.dao;
+
+import java.util.List;
+
+import com.taskflow.model.Status;
+import com.taskflow.model.Task;
+
+public interface TaskDAO {
+	boolean createTask(Task task);
+	List<Task> getTaskByProject(int projectId);
+	boolean updateTaskStatus(int taskId, Status status);
+}

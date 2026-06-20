@@ -1,0 +1,49 @@
+package com.taskflow.dao.impl;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.List;
+
+import com.taskflow.dao.ProjectDAO;
+import com.taskflow.model.Project;
+import com.taskflow.util.DBConnection;
+
+public class ProjectDAOImpl implements ProjectDAO{
+
+	@Override
+	public boolean createProject(Project project) {
+		// TODO Auto-generated method stub
+		Connection con = DBConnection.getConnection();
+
+	    if (con == null) {
+	        return false;
+	    }
+
+	    String sql = """
+	            INSERT INTO projects(name, description, owner_id)
+	            VALUES (?, ?, ?)
+	            """;
+
+	    try {
+	        PreparedStatement ps = con.prepareStatement(sql);
+
+	        ps.setString(1, project.getName());
+	        ps.setString(2, project.getDescription());
+	        ps.setInt(3, project.getOwnerId());
+
+	        return ps.executeUpdate() > 0;
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
+
+	@Override
+	public List<Project> getProjectsByOwner(int ownerId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

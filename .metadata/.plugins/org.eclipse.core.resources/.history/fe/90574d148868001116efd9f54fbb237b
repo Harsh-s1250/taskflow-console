@@ -1,0 +1,94 @@
+package com.taskflow.dao.impl;
+
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.taskflow.dao.TaskDAO;
+import com.taskflow.model.Priority;
+import com.taskflow.model.Status;
+import com.taskflow.model.Task;
+import com.taskflow.util.DBConnection;
+
+public class TaskDAOImpl implements TaskDAO{
+
+	@Override
+	public boolean createTask(Task task) {
+
+		Connection con = DBConnection.getConnection();
+		if(con==null) {
+			return false;
+		}
+		String sql ="INSERT INTO tasks(title, description, status, priority, due_date, assigned_to, project_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+		try {
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.setString(1, task.getTitle());
+			ps.setString(2, task.getDescription());
+			ps.setString(3, task.getStatus().name());
+			ps.setString(4, task.getPriority().name());
+			ps.setDate(5, Date.valueOf(task.getDueDate()));
+			ps.setInt(6, task.getAssignedTo());
+			ps.setInt(7, task.getProjectId());
+			
+			return ps.executeUpdate()>0;
+		}catch(SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	@Override
+	public List<Task> getTaskByProject(int projectId) {
+		List<Task> tasks = new ArrayList<>();
+
+	    Connection con = DBConnection.getConnection();
+
+	    if (con == null) {
+	        return tasks;
+	    }
+
+	    String sql = """
+	            SELECT * FROM tasks
+	            WHERE project_id = ?
+	            """;
+
+	    try {
+
+	        PreparedStatement ps = con.prepareStatement(sql);
+
+	        ps.setInt(1, projectId);
+
+	        ResultSet rs = ps.executeQuery();
+
+	        while (rs.next()) {
+
+	            tasks.add(new Task(
+	                    rs.getInt("task_id"),
+	                    rs.getString("title"),
+	                    rs.getString("description"),
+	                    Status.valueOf(rs.getString("status")),
+	                    Priority.valueOf(rs.getString("priority")),
+	                    rs.getDate("due_date").toLocalDate(),
+	                    rs.getInt("assigned_to"),
+	                    rs.getInt("project_id")
+	            ));
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+
+	    return tasks;
+	}
+
+	@Override
+	public boolean updateTaskStatus(int taskId, Status status) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+}

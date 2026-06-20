@@ -1,0 +1,12 @@
+package com.taskflow.dao;
+
+import java.util.List;
+
+import com.taskflow.model.Project;
+
+public interface ProjectDAO {
+	boolean createProject(Project project);
+    List<Project> getProjectsByOwner(int ownerId);
+    
+    int getProjectCountByOwner(int ownerId);
+}
